@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+Customer -> POS: preorder(product_id, quantity, payment)
+POS -> "Order Service": preorder(product_id, quantity, payment)
+"Order Service" -> "Stock Service": auth(order_id, product_id, quantity)
+alt success case
+"Stock Service" --> "Order Service": auth_id
+"Order Service" -> "Payment Service": pay(order_id, sof_type, sof_credential, amount)
+"Payment Service"-->"Order Service": ok
+"Order Service" -> "Stock Service": capture(auth_id)
+"Stock Service" --> "Order Service": ok
+"Order Service" --> POS: ok
+POS --> Customer: ok
+else payment failed, cancel order
+"Order Service" -> "Payment Service": pay(order_id, sof_type, sof_credential, amount)
+"Stock Service" --> "Order Service": failed
+"Order Service"->"Payment Service": cancel(order_id)
+"Payment Service"-->"Order Service": ok
+"Order Service"-->POS: failed
+POS-->Customer: failed
+else capture stock failed, cancel capture and rollback payment
+"Order Service" -> "Stock Service": capture(auth_id)
+"Stock Service" --> "Order Service": failed
+"Order Service" -> "Stock Service": cancel_capture(auth_id)
+"Stock Service" --> "Order Service": failed
+"Order Service" -> "Payment Service": cancel(auth_id))
+"Payment Service" --> "Order Service": ok
+"Order Service" --> POS: failed
+POS -> Customer: failed
+
+end
+
+
+@enduml

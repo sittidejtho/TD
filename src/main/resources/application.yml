@@ -1,0 +1,55 @@
+server:
+  application.name: td
+  port: 8080
+  servlet.context-path: /td
+
+management:
+  info.env.enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: info, health, prometheus
+      base-path: /
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  build:
+    groupId: '@project.groupId@'
+    artifact: '@project.artifactId@'
+    name: '@project.name@'
+    description: '@project.description@'
+    version: '@project.version@'
+    encoding: '@project.build.sourceEncoding@'
+    java:
+      version: '@java.version@'
+  config:
+    profile: ${spring.profiles.active}
+
+logging.level.root: INFO
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:tddb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: none
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: true
+      path: /h2-ui
+
+
+
